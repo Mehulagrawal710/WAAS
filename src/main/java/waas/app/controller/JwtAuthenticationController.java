@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import waas.app.service.JwtUserDetailsService;
 import waas.app.service.UserService;
 import waas.app.config.JwtTokenUtil;
+import waas.app.dao.ResponseDAO;
 import waas.app.model.JwtRequest;
 import waas.app.model.JwtResponse;
 import waas.app.model.User;
@@ -42,12 +43,17 @@ public class JwtAuthenticationController {
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody Map<String, String> newUser) {
 		String username = newUser.get("username");
+		System.out.println(newUser.get("username"));
+		System.out.println(newUser.get("password"));
+		System.out.println(newUser.get("email"));
 		User dbUser = userService.getUserByUsername(username);
 		if (dbUser == null) {
 			userService.saveUsertoDB(newUser);
-			return new ResponseEntity<>(null, HttpStatus.OK);
+			return new ResponseEntity<>(new ResponseDAO("Signup Successful!"), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("User already exists", HttpStatus.OK);
+			return new ResponseEntity<>(
+					new ResponseDAO("A user with this username already exists, kindly choose another one"),
+					HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 
